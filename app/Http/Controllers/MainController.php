@@ -23,7 +23,37 @@ class MainController extends Controller
 
     public function dashboard() {
         if (Auth::user()->role === 'admin') {
-            return view('main.dashboard');
+            $totalProfit = History::sum('paid_price');
+
+            $monthlyProfit = History::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->sum('paid_price');
+
+
+            $todayProfit = History::whereDate('created_at', now())->sum('paid_price');
+
+            $computerCount = Device::count();
+
+            $monthlyProfitData = [];
+
+            $months = [];
+            for ($i = 11; $i >= 0; $i--) {
+                $date = now()->subMonths($i);
+                $months[] = $date->format('M Y');
+                $monthlyProfitData[] = History::whereMonth('created_at', $date->month)
+                    ->whereYear('created_at', $date->year)
+                    ->sum('paid_price');
+            }
+
+            return view('main.dashboard', compact(
+                'totalProfit',
+                'monthlyProfit',
+                'todayProfit',
+                'computerCount',
+                'monthlyProfitData',
+                'months'
+            ));
+
         } elseif (Auth::user()->role === 'cashier') {
             return view('cashier.dashboard');
         }
