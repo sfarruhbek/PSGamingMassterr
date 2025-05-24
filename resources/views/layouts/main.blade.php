@@ -162,12 +162,12 @@
                 </li>
 
                 <!-- Dashboard -->
-                <li class="menu-item @if(Route::is('main.dashboard')) active @endif">
-                    <a href="{{route('main.dashboard')}}" class="menu-link">
-                        <i class="menu-icon tf-icons bx bxs-dashboard"></i>
-                        <div data-i18n="Analytics">Dashboard</div>
-                    </a>
-                </li>
+{{--                <li class="menu-item @if(Route::is('main.dashboard')) active @endif">--}}
+{{--                    <a href="{{route('main.dashboard')}}" class="menu-link">--}}
+{{--                        <i class="menu-icon tf-icons bx bxs-dashboard"></i>--}}
+{{--                        <div data-i18n="Analytics">Dashboard</div>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
 
                 <!-- Profile -->
                 <li class="menu-item @if(Route::is('profile.edit')) active @endif">
