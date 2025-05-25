@@ -110,7 +110,6 @@ class ProductController extends Controller
     public function sell_product(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'device_id' => 'required|exists:devices,id',
             'products' => 'required|array|min:1',
             'products.*.product_id' => 'required|exists:products,id',
             'products.*.count' => 'required|integer|min:1'
@@ -135,13 +134,23 @@ class ProductController extends Controller
             $product->count -= $item['count'];
             $product->save();
 
-            DeviceProductHistory::create([
-                'device_id' => $deviceId,
-                'product_id' => $product->id,
-                'count' => $item['count'],
-                'sold' => $product->expense * $item['count'],
-                'status' => false
-            ]);
+            if($deviceId === null){
+                DeviceProductHistory::create([
+                    'device_id' => null,
+                    'product_id' => $product->id,
+                    'count' => $item['count'],
+                    'sold' => $product->expense * $item['count'],
+                    'status' => true
+                ]);
+            } else{
+                DeviceProductHistory::create([
+                    'device_id' => $deviceId,
+                    'product_id' => $product->id,
+                    'count' => $item['count'],
+                    'sold' => $product->expense * $item['count'],
+                    'status' => false
+                ]);
+            }
         }
         return response()->json(['message' => 'Mahsulotlar muvaffaqiyatli sotildi']);
     }

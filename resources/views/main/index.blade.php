@@ -2,12 +2,22 @@
 @section('content')
 
     <div class="content-wrapper">
-        <!-- Content -->
+        <!-- Контент -->
 
-        <div class="container-xxl flex-grow-1 container-p-y" id="types_card">
-            {{--            --}}
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary" onclick="sellProduct(null)">
+                    <i class="bx bx-cart"></i> Продажа товара
+                </button>
+            </div>
+
+            <div id="types_card">
+                {{-- Контент будет отображаться здесь --}}
+            </div>
         </div>
     </div>
+
+
 
     <script>
         function completeCard(data){
@@ -27,7 +37,7 @@
                             <div class="d-flex justify-content-between">
                                 <button class="btn btn-success" onclick="startDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Добавить</button>
 
-                                <button class="btn btn-primary" onclick="sellProduct(JSON.parse(decodeURIComponent('${jsonData}')))">Продажа товара</button>
+                                <button class="btn btn-primary" onclick="sellProduct(JSON.parse(decodeURIComponent('${jsonData}')).id)">Продажа товара</button>
 
                                 <button class="btn btn-warning" onclick="finishDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Завершить</button>
                             </div>
@@ -434,11 +444,24 @@
 
 
     <script>
-        function sellProduct(data) {
+        function sellProduct(data_id) {
             let productList = [];
 
+            function calculateTotalSum() {
+                return productList.reduce((sum, p) => {
+                    const expense = parseFloat(p.expense || 0);
+                    return sum + expense * p.count;
+                }, 0);
+            }
+
             function renderProductListHTML() {
-                return productList.map(p => `<li>${p.name} - ${p.count} dona</li>`).join('');
+                const total = calculateTotalSum();
+                const items = productList.map(p => `<li>${p.name} - ${p.count} dona</li>`).join('');
+                return `
+            ${items}
+            <hr>
+            <b>Umumiy summa: ${total.toLocaleString()} so'm</b>
+        `;
             }
 
             function openMainModal() {
@@ -467,7 +490,7 @@
                 }).then(result => {
                     if (result.isConfirmed) {
                         const payload = {
-                            device_id: data.id,
+                            device_id: data_id,
                             products: productList
                         };
 
@@ -518,7 +541,7 @@
                                 processResults: data => ({
                                     results: data.map(p => ({
                                         id: p.id,
-                                        text: `${p.name} (${p.count} ta) - ${parseInt(p.expense).toLocaleString()} сум`, // ✅ expense
+                                        text: `${p.name} (${p.count} ta) - ${parseInt(p.expense).toLocaleString()} so'm`,
                                         count: p.count,
                                         expense: p.expense
                                     }))
@@ -543,6 +566,8 @@
                         const productName = $('#productSelect option:selected').text();
                         const count = parseInt($('#productCount').val());
                         const max = parseInt(document.getElementById('productCount').max);
+                        const selected = $('#productSelect').select2('data')[0];
+                        const expense = selected?.expense || 0;
 
                         if (!productId || !count || count <= 0 || count > max) {
                             Swal.showValidationMessage(`Количество noto‘g‘ri: 1 dan ${max} gacha kiriting`);
@@ -552,7 +577,8 @@
                         productList.push({
                             product_id: productId,
                             name: productName,
-                            count: count
+                            count: count,
+                            expense: expense
                         });
 
                         return true;
@@ -566,7 +592,6 @@
 
             openMainModal();
         }
-
 
     </script>
 @endsection
