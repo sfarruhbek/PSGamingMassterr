@@ -5,81 +5,81 @@
         <!-- Content -->
 
         <div class="container-xxl flex-grow-1 container-p-y" id="types_card">
-{{--            --}}
+            {{--            --}}
         </div>
     </div>
 
     <script>
-            function completeCard(data){
-                let jsonData = encodeURIComponent(JSON.stringify(data));
-                let name = data.name;
-                let timeStart = data.active_histories[0]?.started_at ?? null;
-                console.log(timeStart);
-                let user_count = data.active_histories.length;
-                return `
+        function completeCard(data){
+            let jsonData = encodeURIComponent(JSON.stringify(data));
+            let name = data.name;
+            let timeStart = data.active_histories[0]?.started_at ?? null;
+            console.log(timeStart);
+            let user_count = data.active_histories.length;
+            return `
                 <div class="col-md-6 col-xl-4" id="card-${data.id}">
                     <div class="card cursor-pointer bg-secondary text-white mb-3">
                         <div class="card-header">${name}</div>
                         <div class="card-body">
-                            <h5 class="card-title text-white card-time" data-start-time="${timeStart ?? ''}">Vaqt: 00:00</h5>
-                            <h5 class="card-title text-white">Foydalanuvchilar soni: ${user_count}</h5>
+                            <h5 class="card-title text-white card-time" data-start-time="${timeStart ?? ''}">Время: 00:00</h5>
+                            <h5 class="card-title text-white">Количество пользователей: ${user_count}</h5>
 
                             <div class="d-flex justify-content-between">
-                                <button class="btn btn-success" onclick="startDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Qo‘shish</button>
+                                <button class="btn btn-success" onclick="startDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Добавить</button>
 
-                                <button class="btn btn-primary" onclick="sellProduct(JSON.parse(decodeURIComponent('${jsonData}')))">Mahsulot sotish</button>
+                                <button class="btn btn-primary" onclick="sellProduct(JSON.parse(decodeURIComponent('${jsonData}')))">Продажа товара</button>
 
-                                <button class="btn btn-warning" onclick="finishDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Yakunlash</button>
+                                <button class="btn btn-warning" onclick="finishDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Завершить</button>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            }
-            function startCard(data){
-                let jsonData = encodeURIComponent(JSON.stringify(data));
-                return `
+        }
+        function startCard(data){
+            let jsonData = encodeURIComponent(JSON.stringify(data));
+            return `
                         <div class="col-md-6 col-xl-4" id="card-${data.id}">
                             <div class="card cursor-pointer bg-info text-white mb-3">
                                 <div class="card-header">${data.name}</div>
                                 <div class="card-body">
-                                    <h5 class="card-title text-white card-time">Vaqt: 00:00</h5>
-                                    <h5 class="card-title text-white card-user-count">Foydalanuvchilar soni: 0</h5>
+                                    <h5 class="card-title text-white card-time">Время: 00:00</h5>
+                                    <h5 class="card-title text-white card-user-count">Количество пользователей: 0</h5>
                                     <div class="d-flex justify-content-end">
-                                        <button class="btn btn-primary" onclick="startDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Boshlash</button>
+                                        <button class="btn btn-primary" onclick="startDevice(JSON.parse(decodeURIComponent('${jsonData}')))">Начать</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     `;
-            }
+        }
 
-            function updateCard(card_id, data) {
-                const card = document.getElementById(card_id);
-                if (!card) return;
+        function updateCard(card_id, data) {
+            const card = document.getElementById(card_id);
+            if (!card) return;
 
-                let newCardHtml = "";
-                if(data.active_histories.length == 0){
-                    newCardHtml += startCard(data);
-                }else{
-                    newCardHtml += completeCard(data);
-                }
-                card.outerHTML = newCardHtml;
+            let newCardHtml = "";
+            if(data.active_histories.length == 0){
+                newCardHtml += startCard(data);
+            }else{
+                newCardHtml += completeCard(data);
             }
-            setInterval(() => {
-                document.querySelectorAll('.card-time[data-start-time]').forEach(el => {
-                    const start = el.getAttribute('data-start-time');
-                    if (!start) return;
-                    const startTime = new Date(start);
-                    const now = new Date();
-                    let diff = Math.floor((now - startTime) / 1000);
-                    if (diff < 0) diff = 0;
-                    const hours = String(Math.floor(diff / 3600)).padStart(2, '0');
-                    const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
-                    const seconds = String(diff % 60).padStart(2, '0');
-                    el.textContent = `Vaqt: ${hours}:${minutes}:${seconds}`;
-                });
-            }, 1000);
+            card.outerHTML = newCardHtml;
+        }
+        setInterval(() => {
+            document.querySelectorAll('.card-time[data-start-time]').forEach(el => {
+                const start = el.getAttribute('data-start-time');
+                if (!start) return;
+                const startTime = new Date(start);
+                const now = new Date();
+                let diff = Math.floor((now - startTime) / 1000);
+                if (diff < 0) diff = 0;
+                const hours = String(Math.floor(diff / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+                const seconds = String(diff % 60).padStart(2, '0');
+                el.textContent = `Время: ${hours}:${minutes}:${seconds}`;
+            });
+        }, 1000);
 
     </script>
     <script>
@@ -95,7 +95,7 @@
                     contentHtml += completeCard(val);
                 }
             });
-             addHtml = `
+            addHtml = `
                 <div class="mb-5">
                     <h1 class="pb-1 mb-4">${value.name}</h1>
                     <div class="row">
@@ -116,31 +116,31 @@
                 html: `
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <div>
-                            <label for="userCount" style="font-weight: bold;">Foydalanuvchilar soni</label><br>
+                            <label for="userCount" style="font-weight: bold;">Количество пользователей</label><br>
                             <input id="userCount" type="number" min="1" class="swal2-input" placeholder="Masalan: 3" style="width: 80%;">
                         </div>
                         <div>
-                            <label for="usageType" style="font-weight: bold;">Foydalanish turi</label><br>
+                            <label for="usageType" style="font-weight: bold;">Тип использования</label><br>
                             <select id="usageType" class="swal2-input" style="width: 80%;">
-                                <option value="">Tanlang</option>
-                                <option value="easy">Yengil</option>
-                                <option value="hard">Og'ir</option>
+                                <option value="">Выберите</option>
+                                <option value="easy">Легкий</option>
+                                <option value="hard">Тяжелый</option>
                             </select>
                         </div>
                     </div>
                         `,
                 showCancelButton: true,
-                confirmButtonText: "Boshlash",
-                cancelButtonText: "Bekor qilish",
+                confirmButtonText: "Начать",
+                cancelButtonText: "Отмена",
                 preConfirm: () => {
                     const userCount = parseInt(document.getElementById("userCount").value);
                     const usageType = document.getElementById("usageType").value;
                     if (!userCount || userCount <= 0) {
-                        Swal.showValidationMessage("Foydalanuvchilar soni noto‘g‘ri");
+                        Swal.showValidationMessage("Количество пользователей noto‘g‘ri");
                         return false;
                     }
                     if (!usageType) {
-                        Swal.showValidationMessage("Foydalanish turini tanlang");
+                        Swal.showValidationMessage("Тип использованияni tanlang");
                         return false;
                     }
                     return { user_count: userCount, usage_type: usageType };
@@ -168,7 +168,7 @@
                             })
                         })
                         .catch(error => {
-                            Swal.fire("Xatolik", error.message || "Xatolik yuz berdi", "error");
+                            Swal.fire("Ошибка", error.message || "Ошибка yuz berdi", "error");
                             console.error(error);
                         });
                 }
@@ -203,9 +203,9 @@
                 return `
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                 <span>
-                    <b>Foydalanuvchi #${idx + 1}</b><br>
-                    Vaqti: ${diffMinutes} minut<br>
-                    Narxi: ${totalPrice} so'm
+                    <b>Пользователь #${idx + 1}</b><br>
+                    Времяi: ${diffMinutes} minut<br>
+                    Цена: ${totalPrice} сум
                 </span>
                 ${removeBtn}
             </div>
@@ -213,7 +213,7 @@
             }).join('');
 
             const totalRow = userCount > 0
-                ? `<div style="margin-top:10px; font-weight:bold; text-align:right;">Umumiy summa: ${total.toFixed(2)} so'm</div>`
+                ? `<div style="margin-top:10px; font-weight:bold; text-align:right;">Общая сумма: ${total.toFixed(2)} сум</div>`
                 : '';
 
             const products = productHistories.map(ph => ({
@@ -225,11 +225,11 @@
             const productsHtml = productHistories.length > 0
                 ? `
             <div style="margin-top:20px; border-top:1px solid #ccc; padding-top:10px;">
-                <h5><b>📦 Mahsulotlar:</b></h5>
+                <h5><b>📦 Товары:</b></h5>
                 ${productHistories.map(ph => `
                     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <span>${ph.product?.name || '(Nomaʼlum mahsulot)'} (${ph.count} dona)</span>
-                        <span>${parseFloat(ph.sold * ph.count)} so'm</span>
+                        <span>${ph.product?.name || '(Неизвестный товар)'} (${ph.count} dona)</span>
+                        <span>${parseFloat(ph.sold * ph.count)} сум</span>
                     </div>
                 `).join('')}
             </div>
@@ -237,9 +237,9 @@
                 : '';
 
             const finishAllBtn = userCount > 0
-                ? `<button id="finish-all-btn" class="swal2-confirm swal2-styled" style="flex:1; margin-right:8px;">Umumiy yakunlash</button>`
+                ? `<button id="finish-all-btn" class="swal2-confirm swal2-styled" style="flex:1; margin-right:8px;">Завершить всё</button>`
                 : '';
-            const cancelBtn = `<button id="custom-cancel-btn" class="swal2-cancel swal2-styled" style="flex:1;">Bekor qilish</button>`;
+            const cancelBtn = `<button id="custom-cancel-btn" class="swal2-cancel swal2-styled" style="flex:1;">Отмена</button>`;
 
             const buttonRow = `
         <div style="display:flex; gap:0.5rem; margin-top:10px;">
@@ -253,8 +253,8 @@
             };
 
             Swal.fire({
-                title: "Umumiy hisobot",
-                html: (usersHtml || "Foydalanuvchi topilmadi") + productsHtml + totalRow + buttonRow,
+                title: "Общий отчет",
+                html: (usersHtml || "Пользователь topilmadi") + productsHtml + totalRow + buttonRow,
                 showCancelButton: false,
                 showConfirmButton: false,
                 didOpen: () => {
@@ -282,7 +282,7 @@
 
             let total = 0;
 
-            // Foydalanuvchilar narxi
+            // Пользовательlar narxi
             if (histories && histories.length > 0) {
                 histories.forEach(h => {
                     const start = new Date(h.started_at);
@@ -295,7 +295,7 @@
                 });
             }
 
-            // Mahsulotlar narxi
+            // Товары narxi
             if (productHistories && productHistories.length > 0) {
                 productHistories.forEach(ph => {
                     const sold = parseFloat(ph.sold * ph.count);
@@ -374,7 +374,7 @@
             // Find the user's price from the UI or recalculate here
             // Example: get price from DOM or recalculate as in your usersHtml
             const userDiv = btn.closest('div');
-            const priceText = userDiv.querySelector('span').innerHTML.match(/Narxi: ([\d.]+)/);
+            const priceText = userDiv.querySelector('span').innerHTML.match(/Цена: ([\d.]+)/);
             const paidPrice = priceText ? parseFloat(priceText[1]) : 0;
 
             fetch(`/res/device/finish/${deviceId}/${historyId}`, {
@@ -386,17 +386,17 @@
                 body: JSON.stringify({ paid_price: paidPrice })
             })
                 .then(response => {
-                    if (!response.ok) throw new Error("Xatolik yuz berdi");
+                    if (!response.ok) throw new Error("Ошибка yuz berdi");
                     return response.json();
                 })
                 .then(data => {
-                    Swal.fire("Yakunlandi!", "Foydalanuvchi yakunlandi", "success")
+                    Swal.fire("Yakunlandi!", "Пользователь yakunlandi", "success")
                         .then(() => {
                             window.location.reload();
                         });
                 })
                 .catch(error => {
-                    Swal.fire("Xatolik", error.message, "error");
+                    Swal.fire("Ошибка", error.message, "error");
                     btn.disabled = false;
                 });
         }
@@ -415,7 +415,7 @@
                 })
             })
                 .then(response => {
-                    if (!response.ok) throw new Error("Xatolik yuz berdi");
+                    if (!response.ok) throw new Error("Ошибка yuz berdi");
                     return response.json();
                 })
                 .then(data => {
@@ -425,7 +425,7 @@
                         });
                 })
                 .catch(error => {
-                    Swal.fire("Xatolik", error.message, "error");
+                    Swal.fire("Ошибка", error.message, "error");
                 });
         }
 
@@ -443,15 +443,15 @@
 
             function openMainModal() {
                 Swal.fire({
-                    title: 'Mahsulotlar ro‘yxati',
+                    title: 'Товары ro‘yxati',
                     html: `
                 <ul id="productList" style="text-align: left; padding-left: 20px; margin-bottom: 20px;">
                     ${renderProductListHTML()}
                 </ul>
-                <button type="button" id="addProductBtn" class="btn btn-success">+ Yangi mahsulot qo‘shish</button>
+                <button type="button" id="addProductBtn" class="btn btn-success">+ Добавить товар</button>
             `,
                     showCancelButton: true,
-                    confirmButtonText: 'Yuborish',
+                    confirmButtonText: 'Отправить',
                     didOpen: () => {
                         document.getElementById('addProductBtn').addEventListener('click', () => {
                             openAddProductModal();
@@ -481,11 +481,11 @@
                         })
                             .then(res => res.json())
                             .then(res => {
-                                Swal.fire('Muvaffaqiyatli', 'Mahsulotlar sotildi.', 'success')
+                                Swal.fire('Успешно', 'Товары sotildi.', 'success')
                                     .then(() => location.reload());
                             })
                             .catch(err => {
-                                Swal.fire('Xatolik', 'Server bilan ulanishda xatolik yuz berdi.', 'error');
+                                Swal.fire('Ошибка', 'Ошибка подключения к серверу yuz berdi.', 'error');
                                 console.error(err);
                             });
                     }
@@ -494,21 +494,21 @@
 
             function openAddProductModal() {
                 Swal.fire({
-                    title: 'Mahsulot qo‘shish',
+                    title: 'Добавить товар',
                     html: `
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <select id="productSelect" style="width: 60%" class="form-control">
-                        <option value="">Mahsulotni tanlang...</option>
+                        <option value="">Выберите товар...</option>
                     </select>
-                    <input type="number" id="productCount" min="1" placeholder="Soni" class="form-control" style="width: 30%">
+                    <input type="number" id="productCount" min="1" placeholder="Количество" class="form-control" style="width: 30%">
                 </div>
             `,
-                    confirmButtonText: 'Qo‘shish',
+                    confirmButtonText: 'Добавить',
                     showCancelButton: true,
                     didOpen: () => {
                         $('#productSelect').select2({
                             dropdownParent: $('.swal2-container'),
-                            placeholder: 'Mahsulotni tanlang...',
+                            placeholder: 'Выберите товар...',
                             minimumInputLength: 1,
                             ajax: {
                                 url: '/api/products',
@@ -518,7 +518,7 @@
                                 processResults: data => ({
                                     results: data.map(p => ({
                                         id: p.id,
-                                        text: `${p.name} (${p.count} ta) - ${parseInt(p.expense).toLocaleString()} so'm`, // ✅ expense
+                                        text: `${p.name} (${p.count} ta) - ${parseInt(p.expense).toLocaleString()} сум`, // ✅ expense
                                         count: p.count,
                                         expense: p.expense // ✅ narxni ham saqlaymiz
                                     }))
@@ -532,7 +532,7 @@
                             const maxCount = selected.count;
                             const input = document.getElementById('productCount');
                             input.max = maxCount;
-                            input.placeholder = `Maks: ${maxCount}`;
+                            input.placeholder = `Макс: ${maxCount}`;
                             if (parseInt(input.value) > maxCount) {
                                 input.value = maxCount;
                             }
@@ -545,7 +545,7 @@
                         const max = parseInt(document.getElementById('productCount').max);
 
                         if (!productId || !count || count <= 0 || count > max) {
-                            Swal.showValidationMessage(`Soni noto‘g‘ri: 1 dan ${max} gacha kiriting`);
+                            Swal.showValidationMessage(`Количество noto‘g‘ri: 1 dan ${max} gacha kiriting`);
                             return false;
                         }
 

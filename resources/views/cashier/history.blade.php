@@ -2,22 +2,22 @@
 @section('content')
 
     <div class="content-wrapper">
-        <!-- Content -->
+        <!-- Содержимое -->
         <div class="container-xxl flex-grow-1 container-p-y">
-            <!-- Basic Bootstrap Table -->
+            <!-- Основная таблица -->
             <div class="card">
-                <h5 class="card-header">Tarix</h5>
+                <h5 class="card-header">История</h5>
                 <div class="table-responsive text-nowrap">
                     <table class="table" style="margin-bottom: 90px">
                         <thead>
                         <tr>
-                            <th>N</th>
-                            <th>Kompyuter raqami</th>
-                            <th>Turi</th>
-                            <th>Foydalanish</th>
-                            <th>Boshlanish vaqti</th>
-                            <th>Foydalanilgan vaqti</th>
-                            <th>To'langan summa</th>
+                            <th>№</th>
+                            <th>Номер компьютера</th>
+                            <th>Тип</th>
+                            <th>Использование</th>
+                            <th>Время начала</th>
+                            <th>Продолжительность</th>
+                            <th>Оплаченная сумма</th>
                         </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
@@ -26,9 +26,9 @@
                                 <td>{{ $val->id }}</td>
                                 <td>{{ $val->device->name ?? '-' }}</td>
                                 <td>
-                                    <span class="badge bg-label-primary me-1">
-                                        {{ $val->device->type->name ?? '-' }}
-                                    </span>
+                                <span class="badge bg-label-primary me-1">
+                                    {{ $val->device->type->name ?? '-' }}
+                                </span>
                                 </td>
                                 <td>{{ $val->use ?? '-' }}</td>
                                 <td>{{ $val->started_at ? \Carbon\Carbon::parse($val->started_at)->format('Y-m-d H:i') : '-' }}</td>
@@ -38,23 +38,23 @@
                                             $start = \Carbon\Carbon::parse($val->started_at);
                                             $end = \Carbon\Carbon::parse($val->finished_at);
                                             $diff = $start->diff($end);
-                                            $used = ($diff->h ? $diff->h . ' soat ' : '') . $diff->i . ' min';
+                                            $used = ($diff->h ? $diff->h . ' час ' : '') . $diff->i . ' мин';
                                         @endphp
                                         {{ $used }}
                                     @else
                                         -
                                     @endif
                                 </td>
-                                <td>{{ $val->paid_price ? number_format($val->paid_price, 0, '.', ' ') . " so'm" : '-' }}</td>
+                                <td>{{ $val->paid_price ? number_format($val->paid_price, 0, '.', ' ') . " сум" : '-' }}</td>
                             </tr>
                         @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
-            <!--/ Basic Bootstrap Table -->
+            <!-- / Основная таблица -->
         </div>
-        <!-- / Content -->
+        <!-- / Содержимое -->
         <div class="content-backdrop fade"></div>
     </div>
 
