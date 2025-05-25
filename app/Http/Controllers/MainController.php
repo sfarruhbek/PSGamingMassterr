@@ -62,7 +62,7 @@ class MainController extends Controller
 
     public function types() {
         if (Auth::user()->role === 'admin') {
-            $data = Type::all();
+            $data = Type::with('devices')->get();
             return view('main.types', compact('data'));
         }
         return redirect()->route('dashboard');

@@ -37,7 +37,7 @@
                                 2: {{$val->price12}} so'm<br>
                                 4: {{$val->price22}} so'm
                             </td>
-                            <td>n</td>
+                            <td>{{count($val->devices)}}</td>
                             <td>
                                 <div class="dropdown">
                                     <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">

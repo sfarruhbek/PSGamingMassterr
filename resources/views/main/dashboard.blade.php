@@ -132,7 +132,7 @@
                         }
                     ],
                     chart: {
-                        height: 215,
+                        height: 500,
                         parentHeightOffset: 0,
                         parentWidthOffset: 0,
                         toolbar: {
@@ -159,7 +159,7 @@
                             {
                                 fillColor: config.colors.white,
                                 seriesIndex: 0,
-                                dataPointIndex: 7,
+                                dataPointIndex: 11,
                                 strokeColor: config.colors.primary,
                                 strokeWidth: 2,
                                 size: 6,
@@ -211,8 +211,6 @@
                         labels: {
                             show: false
                         },
-                        min: 10,
-                        max: 50,
                         tickAmount: 4
                     }
                 };
