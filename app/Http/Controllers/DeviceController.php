@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Device;
+use App\Models\DeviceProductHistory;
 use App\Models\History;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -143,6 +144,7 @@ class DeviceController extends Controller
             ->get();
 
         $paidPrices = $request->input('paid_prices', []);
+        $products = $request->input('products', []);
 
         foreach ($histories as $idx => $history) {
             $history->finished_at = now();
@@ -158,6 +160,18 @@ class DeviceController extends Controller
             $history->save();
         }
 
-        return response()->json(['success' => true, 'message' => 'All users finished']);
+        // ✅ Mahsulot tarixini yangilash
+        foreach ($products as $product) {
+            DeviceProductHistory::where('device_id', $deviceId)
+                ->where('product_id', $product['product_id'])
+                ->where('status', false)
+                ->update(['status' => true]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Barcha foydalanuvchilar va mahsulotlar yakunlandi'
+        ]);
     }
+
 }

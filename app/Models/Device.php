@@ -16,6 +16,19 @@ class Device extends Model
     {
         return $this->hasMany(History::class);
     }
+
+    public function deviceProductHistory()
+    {
+        return $this->hasMany(DeviceProductHistory::class);
+    }
+    public function deviceProductHistoryActive()
+    {
+        return $this->hasMany(DeviceProductHistory::class)->where('status', 0);
+    }
+    public function deviceProductHistoryCompleted()
+    {
+        return $this->hasMany(DeviceProductHistory::class)->where('status', 1);
+    }
     public function activeHistories()
     {
         return $this->hasMany(History::class)->whereNull('finished_at');

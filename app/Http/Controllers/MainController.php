@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\History;
+use App\Models\Product;
 use App\Models\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,10 +13,10 @@ class MainController extends Controller
 {
     public function index() {
         if (Auth::user()->role === 'admin') {
-            $data = Type::with('devices')->with('devices.type')->with('devices.activeHistories')->get();
+            $data = Type::with('devices')->with('devices.type')->with('devices.deviceProductHistoryActive.product')->with('devices.activeHistories')->get();
             return view('main.index', compact('data'));
         } elseif (Auth::user()->role === 'cashier') {
-            $data = Type::with('devices')->with('devices.type')->with('devices.activeHistories')->get();
+            $data = Type::with('devices')->with('devices.type')->with('devices.activeHistories')->with('devices.deviceProductHistoryActive.product')->get();
             return view('cashier.index', compact('data'));
         }
         return redirect()->route('dashboard');
@@ -84,6 +85,14 @@ class MainController extends Controller
         } elseif (Auth::user()->role === 'cashier') {
             $data = History::latest()->get();
             return view('cashier.history', compact('data'));
+        }
+        return redirect()->route('dashboard');
+    }
+    public function products()
+    {
+        if (Auth::user()->role === 'admin') {
+            $data = Product::all();
+            return view('main.products', compact('data'));
         }
         return redirect()->route('dashboard');
     }

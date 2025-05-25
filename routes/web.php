@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TypeController;
 use Illuminate\Support\Facades\Route;
@@ -25,12 +27,20 @@ Route::get('/main/types', [MainController::class, 'types'])->name('main.types')-
 Route::get('/main/devices', [MainController::class, 'devices'])->name('main.devices')->middleware(['auth', 'verified']);
 Route::get('/main/history', [MainController::class, 'history'])->name('main.history')->middleware(['auth', 'verified']);
 Route::get('/main/dashboard', [MainController::class, 'dashboard'])->name('main.dashboard')->middleware(['auth', 'verified']);
+Route::get('/main/products', [MainController::class, 'products'])->name('main.products')->middleware(['auth', 'verified']);
 
 
 Route::resource('/res/type', TypeController::class)->middleware(['auth', 'verified'])->names('res.type');
 Route::resource('/res/device', DeviceController::class)->middleware(['auth', 'verified'])->names('res.device');
+Route::resource('/res/product', ProductController::class)->middleware(['auth', 'verified'])->names('res.product');
 
 Route::post('/res/device/start/{id}', [DeviceController::class, 'start'])->name('res.device.start');
 
 Route::post('/res/device/finish/{device}/{history}', [DeviceController::class, 'finishSingleUser']);
 Route::post('/res/device/finish-all/{device}', [DeviceController::class, 'finishAllUsers']);
+
+Route::post('product/add-product', [ProductController::class,'add_product'])->name('product.add-product');
+Route::post('/res/sell-product', [ProductController::class, 'sell_product'])->name('sell.product');
+
+//API
+Route::get('/api/products', [ApiController::class, 'products'])->name('api.products');
