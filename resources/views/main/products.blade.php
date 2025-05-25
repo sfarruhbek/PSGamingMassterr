@@ -23,8 +23,8 @@
                         <tr>
                             <th>№</th>
                             <th>Название продукта</th>
-                            <th>Закупочная цена <i class="bx bx-arrow-to-bottom text-success"></i></th>
-                            <th>Цена продажи <i class="bx bx-arrow-to-top text-danger"></i></th>
+                            <th>Закупочная цена <i class="bx bx-arrow-to-bottom text-danger"></i></th>
+                            <th>Цена продажи <i class="bx bx-arrow-to-top text-success"></i></th>
                             <th>Количество</th>
                             <th>Действия</th>
                         </tr>
@@ -34,8 +34,8 @@
                             <tr>
                                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>1</strong></td>
                                 <td>{{$val->name}}</td>
-                                <td><span class="badge bg-label-success me-1">{{$val->income}} сум</span></td>
-                                <td><span class="badge bg-label-danger me-1">{{$val->expense}} сум</span></td>
+                                <td><span class="badge bg-label-danger me-1">{{$val->income}} сум</span></td>
+                                <td><span class="badge bg-label-success me-1">{{$val->expense}} сум</span></td>
                                 <td><span class="badge bg-label-primary me-1">{{$val->count}} шт</span></td>
                                 <td>
                                     <button class="btn btn-primary" onclick="addProduct({{$val}})"><i class="bx bxs-cart-download"></i></button>

@@ -229,7 +229,7 @@
                 ${productHistories.map(ph => `
                     <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                         <span>${ph.product?.name || '(Неизвестный товар)'} (${ph.count} dona)</span>
-                        <span>${parseFloat(ph.sold * ph.count)} сум</span>
+                        <span>${parseFloat(ph.sold)} сум</span>
                     </div>
                 `).join('')}
             </div>
@@ -298,7 +298,7 @@
             // Товары narxi
             if (productHistories && productHistories.length > 0) {
                 productHistories.forEach(ph => {
-                    const sold = parseFloat(ph.sold * ph.count);
+                    const sold = parseFloat(ph.sold);
                     if (!isNaN(sold)) {
                         total += sold;
                     }
@@ -443,7 +443,7 @@
 
             function openMainModal() {
                 Swal.fire({
-                    title: 'Товары ro‘yxati',
+                    title: 'Товары',
                     html: `
                 <ul id="productList" style="text-align: left; padding-left: 20px; margin-bottom: 20px;">
                     ${renderProductListHTML()}
@@ -520,7 +520,7 @@
                                         id: p.id,
                                         text: `${p.name} (${p.count} ta) - ${parseInt(p.expense).toLocaleString()} сум`, // ✅ expense
                                         count: p.count,
-                                        expense: p.expense // ✅ narxni ham saqlaymiz
+                                        expense: p.expense
                                     }))
                                 }),
                                 cache: true

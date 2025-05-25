@@ -139,7 +139,7 @@ class ProductController extends Controller
                 'device_id' => $deviceId,
                 'product_id' => $product->id,
                 'count' => $item['count'],
-                'sold' => $product->income * $item['count'],
+                'sold' => $product->expense * $item['count'],
                 'status' => false
             ]);
         }
