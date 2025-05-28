@@ -31,9 +31,7 @@ class TypeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price11' => 'required|numeric',
-            'price12' => 'required|numeric',
             'price21' => 'required|numeric',
-            'price22' => 'required|numeric',
         ]);
 
         $type = Type::create($validated);
@@ -65,9 +63,7 @@ class TypeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price11' => 'required|numeric',
-            'price12' => 'required|numeric',
             'price21' => 'required|numeric',
-            'price22' => 'required|numeric',
         ]);
 
         $type = Type::findOrFail($id);

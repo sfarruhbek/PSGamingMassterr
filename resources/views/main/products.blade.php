@@ -30,9 +30,10 @@
                         </tr>
                         </thead>
                         <tbody class="table-border-bottom-0 text-center">
+                        <?php $nm = 1; ?>
                         @foreach($data as $val)
                             <tr>
-                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>1</strong></td>
+                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{$nm++}}</strong></td>
                                 <td>{{$val->name}}</td>
                                 <td><span class="badge bg-label-danger me-1">{{$val->income}} сум</span></td>
                                 <td><span class="badge bg-label-success me-1">{{$val->expense}} сум</span></td>

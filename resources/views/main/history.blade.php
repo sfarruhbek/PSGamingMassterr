@@ -21,9 +21,10 @@
                         </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
+                        <?php $nm = 1; ?>
                         @foreach($data as $val)
                             <tr>
-                                <td>{{ $val->id }}</td>
+                                <td>{{ $nm++ }}</td>
                                 <td>{{ $val->device->name ?? '-' }}</td>
                                 <td>
                                 <span class="badge bg-label-primary me-1">

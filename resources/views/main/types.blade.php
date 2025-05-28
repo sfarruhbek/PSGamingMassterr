@@ -18,24 +18,20 @@
                         <tr>
                             <th>№</th>
                             <th>Название</th>
-                            <th>Цена (Легкий)</th>
-                            <th>Цена (Тяжелый)</th>
+                            <th>Цена</th>
                             <th>Количество</th>
                             <th>Действия</th>
                         </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
+                        <?php $nm = 1; ?>
                         @foreach($data as $val)
                             <tr>
-                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{$val->id}}</strong></td>
+                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{$nm++}}</strong></td>
                                 <td>{{$val->name}}</td>
                                 <td>
                                     2: {{$val->price11}} сум<br>
                                     4: {{$val->price21}} сум
-                                </td>
-                                <td>
-                                    2: {{$val->price12}} сум<br>
-                                    4: {{$val->price22}} сум
                                 </td>
                                 <td>{{count($val->devices)}}</td>
                                 <td>
@@ -83,12 +79,7 @@
                     <strong>Цены до 2 пультов:</strong>
                     <div style="display: flex; gap: 10px; margin-top: 5px;">
                         <div style="flex: 1;">
-                            <label for="price11">Легкий</label><br>
                             <input id="price11" type="number" placeholder="Введите цену..." style="width: 100%; padding: 8px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label for="price12">Тяжелый</label><br>
-                            <input id="price12" type="number" placeholder="Введите цену..." style="width: 100%; padding: 8px;">
                         </div>
                     </div>
                 </div>
@@ -97,12 +88,7 @@
                     <strong>Цены свыше 2 пультов:</strong>
                     <div style="display: flex; gap: 10px; margin-top: 5px;">
                         <div style="flex: 1;">
-                            <label for="price21">Легкий</label><br>
                             <input id="price21" type="number" placeholder="Введите цену..." style="width: 100%; padding: 8px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label for="price22">Тяжелый</label><br>
-                            <input id="price22" type="number" placeholder="Введите цену..." style="width: 100%; padding: 8px;">
                         </div>
                     </div>
                 </div>
@@ -114,16 +100,14 @@
                 preConfirm: () => {
                     const name = document.getElementById("name").value.trim();
                     const price11 = document.getElementById("price11").value;
-                    const price12 = document.getElementById("price12").value;
                     const price21 = document.getElementById("price21").value;
-                    const price22 = document.getElementById("price22").value;
 
-                    if (!name || !price11 || !price12 || !price21 || !price22) {
+                    if (!name || !price11 || !price21) {
                         Swal.showValidationMessage("Пожалуйста, заполните все поля");
                         return false;
                     }
 
-                    return { name, price11, price12, price21, price22 };
+                    return { name, price11, price21 };
                 }
             }).then(result => {
                 if (result.isConfirmed) {
@@ -172,12 +156,7 @@
                     <strong>Цены для 2 пультов:</strong>
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 1;">
-                            <label for="price11">Легкий</label><br>
                             <input id="price11" type="number" value="${type.price11}" placeholder="Цена" style="width: 100%; padding: 8px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label for="price12">Тяжелый</label><br>
-                            <input id="price12" type="number" value="${type.price12}" placeholder="Цена" style="width: 100%; padding: 8px;">
                         </div>
                     </div>
                 </div>
@@ -186,12 +165,7 @@
                     <strong>Цены свыше 2 пультов:</strong>
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 1;">
-                            <label for="price21">Легкий</label><br>
                             <input id="price21" type="number" value="${type.price21}" placeholder="Цена" style="width: 100%; padding: 8px;">
-                        </div>
-                        <div style="flex: 1;">
-                            <label for="price22">Тяжелый</label><br>
-                            <input id="price22" type="number" value="${type.price22}" placeholder="Цена" style="width: 100%; padding: 8px;">
                         </div>
                     </div>
                 </div>
@@ -204,12 +178,10 @@
                     const updated = {
                         name: document.getElementById("name").value.trim(),
                         price11: document.getElementById("price11").value,
-                        price12: document.getElementById("price12").value,
                         price21: document.getElementById("price21").value,
-                        price22: document.getElementById("price22").value,
                     };
 
-                    if (!updated.name || !updated.price11 || !updated.price12 || !updated.price21 || !updated.price22) {
+                    if (!updated.name || !updated.price11 || !updated.price21) {
                         Swal.showValidationMessage("Пожалуйста, заполните все поля");
                         return false;
                     }

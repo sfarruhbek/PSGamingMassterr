@@ -22,9 +22,10 @@
                         </tr>
                         </thead>
                         <tbody class="table-border-bottom-0">
+                        <?php $nm = 1; ?>
                         @foreach($data as $val)
                             <tr>
-                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{$val->id}}</strong></td>
+                                <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>{{$nm++}}</strong></td>
                                 <td>{{$val->name}}</td>
                                 <td><span class="badge bg-label-primary me-1">{{$val->type->name}}</span></td>
                                 <td>

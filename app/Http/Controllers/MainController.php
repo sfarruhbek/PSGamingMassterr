@@ -134,7 +134,7 @@ class MainController extends Controller
 
     public function history() {
         if (Auth::user()->role === 'admin') {
-            $data = History::latest()->get();
+            $data = History::when('paid_price' != 0)->latest()->get();
             return view('main.history', compact('data'));
         } elseif (Auth::user()->role === 'cashier') {
             $data = History::latest()->get();
