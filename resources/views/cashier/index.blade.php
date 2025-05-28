@@ -129,11 +129,11 @@
                             <label for="userCount" style="font-weight: bold;">Количество пользователей</label><br>
                             <input id="userCount" type="number" min="1" class="swal2-input" placeholder="Masalan: 3" style="width: 80%;">
                         </div>
-                        <div>
+                        <div style="display: none">
                             <label for="usageType" style="font-weight: bold;">Тип использования</label><br>
                             <select id="usageType" class="swal2-input" style="width: 80%;">
                                 <option value="">Выберите</option>
-                                <option value="easy">Легкий</option>
+                                <option value="easy" selected>Легкий</option>
                                 <option value="hard">Тяжелый</option>
                             </select>
                         </div>
@@ -215,9 +215,7 @@
                 <span>
                     <b>Пользователь #${idx + 1}</b><br>
                     Времяi: ${diffMinutes} minut<br>
-                    Цена: ${totalPrice} сум
                 </span>
-                ${removeBtn}
             </div>
         `;
             }).join('');
@@ -293,19 +291,36 @@
             let total = 0;
 
             // Пользовательlar narxi
+
             if (histories && histories.length > 0) {
-                histories.forEach(h => {
-                    const start = new Date(h.started_at);
-                    const end = h.ended_at ? new Date(h.ended_at) : now;
-                    const minutes = Math.floor((end - start) / 60000);
-                    const pricePerHour = h.use === "easy" ? priceFields.easy : priceFields.hard;
+                let h = histories[0];
+
+                let start = new Date(h.started_at);
+                let end = h.ended_at ? new Date(h.ended_at) : now;
+                let minutes = Math.floor((end - start) / 60000);
+
+                if(histories.length < 3) {
+                    let pricePerHour = h.use === "easy" ? priceFields.easy : priceFields.hard;
                     if (pricePerHour) {
                         total += minutes * (pricePerHour / 60);
                     }
-                });
+                } else {
+                    let h2 = histories[2];
+                    const start2 = new Date(h.started_at);
+                    const end2 = h.ended_at ? new Date(h.ended_at) : now;
+                    const minutes2 = Math.floor((end2 - start2) / 60000);
+
+                    minutes = minutes - minutes2;
+                    let pricePerHour = h.use === "easy" ? priceFields.easy : priceFields.hard;
+                    let pricePerHour2 = h2.use === "easy" ? priceFields.easy : priceFields.hard;
+                    if (pricePerHour) {
+                        total += (minutes * (pricePerHour / 60)) + (minutes2 * (pricePerHour2 / 60));
+                    }
+                }
+
+
             }
 
-            // Товары narxi
             if (productHistories && productHistories.length > 0) {
                 productHistories.forEach(ph => {
                     const sold = parseFloat(ph.sold);

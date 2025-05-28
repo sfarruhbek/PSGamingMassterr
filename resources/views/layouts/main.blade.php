@@ -119,7 +119,7 @@
                 <!-- История продукта -->
                 <li class="menu-item {{ request()->routeIs('main.product-history') ? 'active' : '' }}">
                     <a href="{{ route('main.product-history') }}" class="menu-link">
-                        <i class="menu-icon tf-icons bx bx-history"></i>
+                        <i class="menu-icon tf-icons bx bxs-cart-download"></i>
                         <div data-i18n="Analytics">История продукта</div>
                     </a>
                 </li>
