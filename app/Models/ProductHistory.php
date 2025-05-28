@@ -12,4 +12,8 @@ class ProductHistory extends Model
         'income',
         'expense',
     ];
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

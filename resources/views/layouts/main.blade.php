@@ -115,6 +115,16 @@
                     </a>
                 </li>
 
+
+                <!-- История продукта -->
+                <li class="menu-item {{ request()->routeIs('main.product-history') ? 'active' : '' }}">
+                    <a href="{{ route('main.product-history') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-history"></i>
+                        <div data-i18n="Analytics">История продукта</div>
+                    </a>
+                </li>
+
+
                 <!-- Панель -->
                 <li class="menu-item @if(Route::is('main.dashboard')) active @endif">
                     <a href="{{route('main.dashboard')}}" class="menu-link">

@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\ProductHistory;
 use App\Models\Type;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -115,39 +116,198 @@ class MainController extends Controller
 
 
 
-    public function types() {
+    public function types(Request $request) {
         if (Auth::user()->role === 'admin') {
-            $data = Type::with('devices')->get();
+            $query = Type::with('devices');
+
+            if ($request->has('search') && $request->search) {
+                $query->where(function($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%')
+                        ->orWhere('price', 'like', '%' . $request->search . '%');
+                });
+            }
+
+            $data = $query->paginate(50); // Pagination: har sahifada 50 ta yozuv
             return view('main.types', compact('data'));
         }
         return redirect()->route('dashboard');
     }
 
-    public function devices() {
+    public function devices(Request $request) {
         if (Auth::user()->role === 'admin') {
-            $data = Device::with('type')->get();
+            $query = Device::with('type');
+
+            // Agar qidiruv parametri kiritilgan bo'lsa
+            if ($request->has('search') && $request->search) {
+                $query->where('name', 'like', '%' . $request->search . '%'); // 'name' ustunini qidirish
+            }
+
+            $data = $query->paginate(50); // Pagination: har sahifada 50 ta yozuv
             $types = Type::all();
-            return view('main.devices', compact('data','types'));
+            return view('main.devices', compact('data', 'types'));
         }
         return redirect()->route('dashboard');
     }
 
-    public function history() {
+    public function history(Request $request)
+    {
+        $query = History::when('paid_price' != 0, function ($query) {
+            return $query->where('paid_price', '!=', 0); // 'paid_price' 0 ga teng bo‘lmaganlarni olish
+        });
+
+        // Agar qidiruv parametri kiritilgan bo'lsa
+        if ($request->has('search') && $request->search) {
+            $query->where(function ($query) use ($request) {
+                $query->whereHas('device', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%');
+                })
+                    ->orWhere('started_at', 'like', '%' . $request->search . '%')
+                    ->orWhere('paid_price', 'like', '%' . $request->search . '%')
+                    ->orWhere('finished_at', 'like', '%' . $request->search . '%');
+            });
+        }
+
+
+        $data = $query->latest()->paginate(50); // Pagination: har sahifada 50 ta yozuv
+
+
         if (Auth::user()->role === 'admin') {
-            $data = History::when('paid_price' != 0)->latest()->get();
             return view('main.history', compact('data'));
-        } elseif (Auth::user()->role === 'cashier') {
-            $data = History::latest()->get();
+        }
+        elseif (Auth::user()->role === 'cashier') {
             return view('cashier.history', compact('data'));
         }
+
         return redirect()->route('dashboard');
     }
-    public function products()
+
+    public function products(Request $request)
     {
         if (Auth::user()->role === 'admin') {
-            $data = Product::all();
+            $query = Product::query();
+
+            // Agar qidiruv parametri kiritilgan bo'lsa
+            if ($request->has('search') && $request->search) {
+                $query->where(function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%')
+                        ->orWhere('count', 'like', '%' . $request->search . '%')
+                        ->orWhere('income', 'like', '%' . $request->search . '%')
+                        ->orWhere('expense', 'like', '%' . $request->search . '%');
+                });
+            }
+
+            $data = $query->paginate(50); // Pagination: har sahifada 50 ta yozuv
             return view('main.products', compact('data'));
         }
         return redirect()->route('dashboard');
     }
+    public function product_history(Request $request)
+    {
+        // Query for ProductHistory data
+        $productQuery = ProductHistory::query();
+
+        if ($request->has('search') && $request->search) {
+            $productQuery->where(function ($query) use ($request) {
+                $query->whereHas('product', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%');
+                })
+                    ->orWhere('count', 'like', '%' . $request->search . '%')
+                    ->orWhere('income', 'like', '%' . $request->search . '%')
+                    ->orWhere('expense', 'like', '%' . $request->search . '%')
+                    ->orWhere('created_at', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        // Get the ProductHistory data
+        $productHistory = $productQuery->select('product_id', 'count', 'income', 'expense', 'created_at')
+            ->with('product') // Eager load the product relationship
+            ->get(); // Fetch all records
+
+        // Query for DeviceProductHistory data
+        $deviceQuery = DeviceProductHistory::query();
+
+        if ($request->has('search') && $request->search) {
+            $deviceQuery->where(function ($query) use ($request) {
+                $query->whereHas('device', function ($query) use ($request) {
+                    $query->where('name', 'like', '%' . $request->search . '%');
+                })
+                    ->orWhereHas('product', function ($query) use ($request) {
+                        $query->where('name', 'like', '%' . $request->search . '%');
+                    });
+            });
+        }
+
+        // Debug device query (without filter)
+        $deviceHistory = $deviceQuery->select('device_id', 'product_id', 'count', 'sold', 'status', 'created_at')
+            ->with(['device', 'product']) // Eager load device and product
+            ->get(); // Fetch all records
+
+        $productHistory = $productHistory->map(function($history) {
+            return [
+                'type' => 'product',
+                'product_id' => $history->product_id,
+                'count' => $history->count,
+                'income' => $history->income,
+                'expense' => $history->expense,
+                'created_at' => "$history->created_at"
+            ];
+        });
+
+        $deviceHistory = $deviceHistory->map(function($history) {
+            return [
+                'type' => 'device',
+                'product_id' => $history->product_id,
+                'count' => $history->count,
+                'sold' => $history->sold,
+                'status' => $history->status,
+                'created_at' => "$history->created_at"
+            ];
+        });
+
+        $mergedHistory = $productHistory->merge($deviceHistory);
+
+        $mergedHistory = $mergedHistory->map(function ($item) {
+            // Convert array back to model if it's not an instance of the model
+            if (!($item instanceof ProductHistory) && !isset($item['sold'])) {
+                return new ProductHistory($item);
+            }
+
+            if (!($item instanceof DeviceProductHistory) && isset($item['sold'])) {
+                return new DeviceProductHistory($item);
+            }
+
+            return $item;
+        });
+
+        // Sort the merged data by 'created_at'
+        $mergedHistory = $mergedHistory->sortByDesc('created_at');
+
+        // Pagination
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = 50;
+
+        $currentPageItems = $mergedHistory->slice(($currentPage - 1) * $perPage, $perPage);
+
+        // Create the paginator
+        $data = new LengthAwarePaginator(
+            $currentPageItems,
+            $mergedHistory->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+
+        // Return the view with the data
+        if (Auth::user()->role === 'admin') {
+            return view('main.product-history', compact('data'));
+        } elseif (Auth::user()->role === 'cashier') {
+            return view('cashier.product-history', compact('data'));
+        }
+
+        return redirect()->route('dashboard');
+    }
+
+
+
 }

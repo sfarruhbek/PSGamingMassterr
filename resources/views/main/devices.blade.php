@@ -8,6 +8,10 @@
             <!-- Таблица -->
             <div class="card">
                 <h5 class="card-header">Компьютеры</h5>
+                <form method="GET" action="" class="d-flex m-2" style="max-width: 400px; width: 100%;">
+                    <input type="text" name="search" class="form-control mr-2" placeholder="Qidiruv..." value="{{ request()->search }}">
+                    <button type="submit" class="btn btn-primary">Qidirish</button>
+                </form>
                 <div class="text-end">
                     <button onclick="addDevice()" class="btn btn-primary m-2">Добавить</button>
                 </div>
@@ -47,6 +51,11 @@
                         @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Pagination linklari --}}
+                <div class="mt-3 d-flex justify-content-center">
+                    {{ $data->links('pagination::bootstrap-4') }}
                 </div>
             </div>
             <!-- / Таблица -->

@@ -26,6 +26,7 @@ Route::get('/main/index', [MainController::class, 'index'])->name('main.index')-
 Route::get('/main/types', [MainController::class, 'types'])->name('main.types')->middleware(['auth', 'verified']);
 Route::get('/main/devices', [MainController::class, 'devices'])->name('main.devices')->middleware(['auth', 'verified']);
 Route::get('/main/history', [MainController::class, 'history'])->name('main.history')->middleware(['auth', 'verified']);
+Route::get('/main/product-history', [MainController::class, 'product_history'])->name('main.product-history')->middleware(['auth', 'verified']);
 Route::get('/main/dashboard', [MainController::class, 'dashboard'])->name('main.dashboard')->middleware(['auth', 'verified']);
 Route::get('/main/products', [MainController::class, 'products'])->name('main.products')->middleware(['auth', 'verified']);
 
