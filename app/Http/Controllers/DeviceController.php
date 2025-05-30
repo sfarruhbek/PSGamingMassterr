@@ -158,29 +158,23 @@ class DeviceController extends Controller
         $ss = true;
         foreach ($histories as $idx => $history) {
             $history->finished_at = now();
-
-            if (isset($paidPrices)) {
-                if($ss) {
+            if($ss) {
+                if (isset($paidPrices)) {
                     $history->paid_price = intval($paidPrices - $products_cost);
-                }else{
-                    $history->paid_price = 0;
                 }
-            }
-//            else {
-//                $minutes = now()->diffInMinutes($history->started_at);
-//
-//                if($ss){
+//                else {
+//                    $minutes = now()->diffInMinutes($history->started_at);
 //                    $pricePerHour = $history->price ?? 0;
-//                } else {
-//                    $pricePerHour = 0;
-//                }
 //
-//                if($pricePerHour == 0){
-//                    $history->paid_price = 0;
-//                } else {
-//                    $history->paid_price = intval($minutes * ($pricePerHour / 60));
+//                    if($pricePerHour == 0){
+//                        $history->paid_price = 0;
+//                    } else {
+//                        $history->paid_price = intval($minutes * ($pricePerHour / 60));
+//                    }
 //                }
-//            }
+            }else{
+                $history->paid_price = 0;
+            }
             $history->save();
             $ss = false;
         }
