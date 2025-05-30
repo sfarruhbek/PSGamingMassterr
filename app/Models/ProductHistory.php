@@ -11,6 +11,7 @@ class ProductHistory extends Model
         'count',
         'income',
         'expense',
+        'created_at',
     ];
     public function product()
     {

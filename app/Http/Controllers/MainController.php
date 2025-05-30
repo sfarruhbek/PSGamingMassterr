@@ -127,7 +127,7 @@ class MainController extends Controller
                 });
             }
 
-            $data = $query->paginate(50); // Pagination: har sahifada 50 ta yozuv
+            $data = $query->paginate(100); // Pagination: har sahifada 50 ta yozuv
             return view('main.types', compact('data'));
         }
         return redirect()->route('dashboard');
@@ -142,7 +142,7 @@ class MainController extends Controller
                 $query->where('name', 'like', '%' . $request->search . '%'); // 'name' ustunini qidirish
             }
 
-            $data = $query->paginate(50); // Pagination: har sahifada 50 ta yozuv
+            $data = $query->paginate(100); // Pagination: har sahifada 50 ta yozuv
             $types = Type::all();
             return view('main.devices', compact('data', 'types'));
         }
@@ -151,7 +151,7 @@ class MainController extends Controller
 
     public function history(Request $request)
     {
-        $query = History::when('paid_price' != 0, function ($query) {
+        $query = History::when(true, function ($query) {
             return $query->where('paid_price', '!=', 0); // 'paid_price' 0 ga teng bo‘lmaganlarni olish
         });
 
@@ -167,19 +167,18 @@ class MainController extends Controller
             });
         }
 
-
-        $data = $query->latest()->paginate(50); // Pagination: har sahifada 50 ta yozuv
-
+        // DESC bo'yicha paid_price bo'yicha saralash
+        $data = $query->orderBy('started_at', 'desc')->paginate(100);
 
         if (Auth::user()->role === 'admin') {
             return view('main.history', compact('data'));
-        }
-        elseif (Auth::user()->role === 'cashier') {
+        } elseif (Auth::user()->role === 'cashier') {
             return view('cashier.history', compact('data'));
         }
 
         return redirect()->route('dashboard');
     }
+
 
     public function products(Request $request)
     {
@@ -196,7 +195,7 @@ class MainController extends Controller
                 });
             }
 
-            $data = $query->paginate(50); // Pagination: har sahifada 50 ta yozuv
+            $data = $query->paginate(100); // Pagination: har sahifada 50 ta yozuv
             return view('main.products', compact('data'));
         }
         return redirect()->route('dashboard');
@@ -282,6 +281,7 @@ class MainController extends Controller
         // Sort the merged data by 'created_at'
         $mergedHistory = $mergedHistory->sortByDesc('created_at');
 
+
         // Pagination
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $perPage = 50;
@@ -307,7 +307,5 @@ class MainController extends Controller
 
         return redirect()->route('dashboard');
     }
-
-
 
 }

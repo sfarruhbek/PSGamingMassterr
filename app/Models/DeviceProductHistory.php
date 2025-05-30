@@ -12,6 +12,7 @@ class DeviceProductHistory extends Model
         'count',
         'sold',
         'status',
+        'created_at',
     ];
 
     public function device()
