@@ -147,7 +147,7 @@ class DeviceController extends Controller
         $products = $request->input('products', []);
 
         // ✅ Mahsulot tarixini yangilash
-        $products_cost = DeviceProductHistory::where('device_id', $deviceId)->sum('sold');
+        $products_cost = DeviceProductHistory::where('device_id', $deviceId)->where('status', false)->sum('sold');
         foreach ($products as $product) {
             DeviceProductHistory::where('device_id', $deviceId)
                 ->where('product_id', $product['product_id'])
