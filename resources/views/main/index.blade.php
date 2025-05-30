@@ -571,7 +571,7 @@
                         $('#productSelect').select2({
                             dropdownParent: $('.swal2-container'),
                             placeholder: 'Выберите товар...',
-                            minimumInputLength: 1,
+                            dropdownCssClass: 'select2-scrollable-dropdown',
                             ajax: {
                                 url: '/api/products',
                                 dataType: 'json',

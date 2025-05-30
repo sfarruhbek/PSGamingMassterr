@@ -162,6 +162,8 @@ class DeviceController extends Controller
             if (isset($paidPrices)) {
                 if($ss) {
                     $history->paid_price = intval($paidPrices - $products_cost);
+                }else{
+                    $history->paid_price = 0;
                 }
             }
 //            else {
