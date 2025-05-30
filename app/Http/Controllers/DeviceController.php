@@ -146,13 +146,22 @@ class DeviceController extends Controller
         $paidPrices = $request->input('paid_prices', 0);
         $products = $request->input('products', []);
 
+        // ✅ Mahsulot tarixini yangilash
+        $products_cost = DeviceProductHistory::where('device_id', $deviceId)->sum('sold');
+        foreach ($products as $product) {
+            DeviceProductHistory::where('device_id', $deviceId)
+                ->where('product_id', $product['product_id'])
+                ->where('status', false)
+                ->update(['status' => true]);
+        }
+
         $ss = true;
         foreach ($histories as $idx => $history) {
             $history->finished_at = now();
 
             if (isset($paidPrices)) {
                 if($ss) {
-                    $history->paid_price = intval($paidPrices);
+                    $history->paid_price = intval($paidPrices - $products_cost);
                 }
             }
 //            else {
@@ -172,14 +181,6 @@ class DeviceController extends Controller
 //            }
             $history->save();
             $ss = false;
-        }
-
-        // ✅ Mahsulot tarixini yangilash
-        foreach ($products as $product) {
-            DeviceProductHistory::where('device_id', $deviceId)
-                ->where('product_id', $product['product_id'])
-                ->where('status', false)
-                ->update(['status' => true]);
         }
 
         return response()->json([
