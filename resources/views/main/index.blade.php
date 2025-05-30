@@ -221,8 +221,22 @@
             }).join('');
 
             const totalRow = userCount > 0
-                ? `<div style="margin-top:10px; font-weight:bold; text-align:right;">Общая сумма: ${total.toFixed(2)} сум</div>`
+                ? `
+                <div style="margin-top:10px; font-weight:bold; text-align:right;">
+                    Общая сумма: ${total.toFixed(2)} сум
+                </div>
+                <div class="mb-3 row justify-content-end" style="margin-top:10px;">
+                    <label for="paidAmount" class="col-form-label col-auto fw-bold text-end">К оплате:</label>
+                    <div class="col-auto">
+                        <input type="number" class="form-control text-end" id="paidAmount" placeholder="Введите сумму  " style="width: 200px;" />
+                    </div>
+                    <div class="col-auto align-self-center">сум</div>
+                </div>
+                `
                 : '';
+
+
+
 
             const products = productHistories.map(ph => ({
                 product_id: ph.product_id,
@@ -255,10 +269,8 @@
         </div>
     `;
 
-            const combinedData = {
-                paid_prices: paidPrices,
-                products: products
-            };
+
+
 
             Swal.fire({
                 title: "Общий отчет",
@@ -267,8 +279,19 @@
                 showConfirmButton: false,
                 didOpen: () => {
                     const allBtn = document.getElementById('finish-all-btn');
+                    let sold_cost_input = document.getElementById('paidAmount');
+                    let sold_cost = 0;
+
+                    sold_cost_input.addEventListener('input', () => {
+                        sold_cost = Number(sold_cost_input.value)
+                    });
                     if (allBtn) {
                         allBtn.addEventListener('click', function () {
+                            const combinedData = {
+                                prices: paidPrices,
+                                paid_prices: sold_cost,
+                                products: products
+                            };
                             finishAllUsers(data.id, combinedData); // ✅ data obyekt tarzida yuboriladi
                         });
                     }
@@ -435,7 +458,8 @@
                     "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
                 },
                 body: JSON.stringify({
-                    paid_prices: data.paid_prices || [],
+                    prices: data.prices || [],
+                    paid_prices: data.paid_prices,
                     products: data.products || []
                 })
             })
