@@ -191,11 +191,15 @@
             const userCount = histories.length;
 
             const total = calculateSimpleTotal(histories, data.type, productHistories);
+            let totalProductSum = productHistories.reduce((sum, ph) => sum + parseFloat(ph.sold), 0);
+            let totalUsersSum = total - productHistories.reduce((sum, ph) => sum + parseFloat(ph.sold), 0);
+
             const priceFields = userCount > 2
                 ? { easy: data.type.price21, hard: data.type.price22 }
                 : { easy: data.type.price11, hard: data.type.price12 };
 
             let paidPrices = [];
+
             const usersHtml = histories.map((h, idx) => {
                 const startTime = new Date(h.started_at);
                 const now = new Date();
@@ -203,6 +207,8 @@
                 const usageType = h.use;
                 const pricePerHour = usageType === "easy" ? priceFields.easy : priceFields.hard;
                 const totalPrice = pricePerHour ? (diffMinutes * (pricePerHour / 60)).toFixed(0) : "-";
+
+
                 if (pricePerHour) paidPrices.push(parseFloat(totalPrice));
 
                 const allowRemove = histories.length > 1;
@@ -222,6 +228,14 @@
 
             const totalRow = userCount > 0
                 ? `
+                <div style="margin-top:10px; font-weight:bold; text-align:right;">
+                    Общая сумма пользователей: ${totalUsersSum.toFixed(2)} сум
+                </div>
+
+                <div style="margin-top:10px; font-weight:bold; text-align:right;">
+                    Общая сумма товаров: ${totalProductSum.toFixed(2)} сум
+                </div>
+
                 <div style="margin-top:10px; font-weight:bold; text-align:right;">
                     Общая сумма: ${total.toFixed(2)} сум
                 </div>
