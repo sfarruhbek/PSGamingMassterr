@@ -107,6 +107,15 @@ class ProductController extends Controller
         return redirect()->back()->with(['add_product'=>'success']);
     }
 
+    public function update_product(Request $request)
+    {
+        $hs = ProductHistory::findOrFail($request->id);
+        $hs->update([
+            'count'=>$request->count,
+        ]);
+        return redirect()->back()->with(['add_product'=>'success']);
+    }
+
     public function sell_product(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -125,13 +134,18 @@ class ProductController extends Controller
         foreach ($products as $item) {
             $product = Product::find($item['product_id']);
 
-            if ($product->count < $item['count']) {
+            if ($product->count < $item['count'] && $item['product_history_id'] == 0) {
                 return response()->json([
                     'message' => "Mahsulot yetarli emas: {$product->name} (mavjud: {$product->count}, so‘ralgan: {$item['count']})"
                 ], 400);
             }
 
-            $product->count -= $item['count'];
+            if($item['product_history_id'] !== 0){
+                $pr = DeviceProductHistory::findOrFail($item['product_history_id']);
+                $product->count -= $item['count'] - $pr->count;
+            }else{
+                $product->count -= $item['count'];
+            }
             $product->save();
 
             if($deviceId === null){
@@ -143,15 +157,27 @@ class ProductController extends Controller
                     'status' => true
                 ]);
             } else{
-                DeviceProductHistory::create([
-                    'device_id' => $deviceId,
-                    'product_id' => $product->id,
-                    'count' => $item['count'],
-                    'sold' => $product->expense * $item['count'],
-                    'status' => false
-                ]);
+
+
+                if($item['product_history_id'] !== 0){
+                    $pr = DeviceProductHistory::findOrFail($item['product_history_id']);
+                    $pr->update([
+                        'count' => $item['count'],
+                        'sold' => $product->expense * $item['count'],
+                    ]);
+                } else {
+                    DeviceProductHistory::create([
+                        'device_id' => $deviceId,
+                        'product_id' => $product->id,
+                        'count' => $item['count'],
+                        'sold' => $product->expense * $item['count'],
+                        'status' => false
+                    ]);
+                }
             }
         }
+
+
         return response()->json(['message' => 'Mahsulotlar muvaffaqiyatli sotildi']);
     }
 }

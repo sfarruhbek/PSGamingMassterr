@@ -40,7 +40,6 @@ Route::post('/res/device/start/{id}', [DeviceController::class, 'start'])->name(
 Route::post('/res/device/finish/{device}/{history}', [DeviceController::class, 'finishSingleUser']);
 Route::post('/res/device/finish-all/{device}', [DeviceController::class, 'finishAllUsers']);
 
-Route::post('product/add-product', [ProductController::class,'add_product'])->name('product.add-product');
 Route::post('/res/sell-product', [ProductController::class, 'sell_product'])->name('sell.product');
 
 //API

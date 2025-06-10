@@ -483,8 +483,35 @@
 
 
     <script>
+        let oldProductHtml = "";
         function sellProduct(data_id) {
             let productList = [];
+
+            console.log(data[0]['devices'][0]['device_product_history_active']);
+            let DDevice = null;
+
+            data.forEach(val => {
+                val['devices'].forEach(k => {
+                    if(k['id'] === data_id){
+                        DDevice = k;
+                    }
+                });
+            });
+
+            if(DDevice) {
+                DDevice['device_product_history_active'].forEach(val => {
+                    let name = `${val['product']['name']}(${parseInt(val['product']['expense']).toLocaleString()} so'm)`
+                    productList.push({
+                        num: productList.length,
+                        product_id: val['product']['id'],
+                        name: name,
+                        count: val['count'],
+                        expense: val['sold'],
+                        product_history_id: val['id'],
+                    });
+                });
+            }
+
 
             function calculateTotalSum() {
                 return productList.reduce((sum, p) => {
@@ -493,14 +520,23 @@
                 }, 0);
             }
 
+
             function renderProductListHTML() {
                 const total = calculateTotalSum();
-                const items = productList.map(p => `<li>${p.name} - ${p.count} dona</li>`).join('');
+                const items = productList.map(p => `
+                    <li>
+                        ${p.name} - ${p.count} dona
+                        <button class="editProductBtn btn btn-warning bx bx-pencil"
+                                type="button"
+                                data-data='${JSON.stringify(p).replace(/'/g, "&apos;")}'>
+                        </button>
+                    </li>
+                `).join('');
                 return `
             ${items}
             <hr>
             <b>Umumiy summa: ${total.toLocaleString()} so'm</b>
-        `;
+                `;
             }
 
             function openMainModal() {
@@ -515,6 +551,13 @@
                     showCancelButton: true,
                     confirmButtonText: 'Отправить',
                     didOpen: () => {
+                        document.querySelectorAll('.editProductBtn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const dataValue = this.getAttribute('data-data');
+                                const jsonData = JSON.parse(dataValue);
+                                openEditProductModal(jsonData);
+                            });
+                        });
                         document.getElementById('addProductBtn').addEventListener('click', () => {
                             openAddProductModal();
                         });
@@ -580,7 +623,7 @@
                                 processResults: data => ({
                                     results: data.map(p => ({
                                         id: p.id,
-                                        text: `${p.name} (${p.count} ta) - ${parseInt(p.expense).toLocaleString()} so'm`,
+                                        text: `${p.name}(${parseInt(p.expense).toLocaleString()} so'm)`,
                                         count: p.count,
                                         expense: p.expense
                                     }))
@@ -614,10 +657,12 @@
                         }
 
                         productList.push({
+                            num: productList.length,
                             product_id: productId,
                             name: productName,
                             count: count,
-                            expense: expense
+                            expense: expense,
+                            product_history_id: 0
                         });
 
                         return true;
@@ -625,6 +670,38 @@
                 }).then(res => {
                     if (res.isConfirmed) {
                         openMainModal();
+                    }
+                });
+            }
+
+            function openEditProductModal(d) {
+                console.log(d);
+                Swal.fire({
+                    title: d.name,
+                    html: `
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="productCount" min="1" value="${d.count}" placeholder="Количество" class="form-control" style="width: 100%">
+                        </div>
+                    `,
+                    confirmButtonText: 'Добавить',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                        const productId = d.num;
+                        const count = parseInt(document.getElementById('productCount').value);
+
+                        productList.forEach(vv => {
+                            if (vv.num === productId) {
+                                vv.count = count;
+                            }
+                        });
+                        console.log(productId + " - " + count);
+                        console.log(productList);
+
+                        return true;
+                    }
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        openMainModal(); // Asosiy modalni ochish
                     }
                 });
             }
