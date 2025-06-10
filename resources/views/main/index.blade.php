@@ -697,7 +697,7 @@
                             <input type="number" id="productCount" min="1" value="${d.count}" placeholder="Количество" class="form-control" style="width: 100%">
                         </div>
                     `,
-                    confirmButtonText: 'Добавить',
+                    confirmButtonText: 'Обновить',
                     showCancelButton: true,
                     preConfirm: () => {
                         const productId = d.num;
