@@ -191,11 +191,15 @@
             const userCount = histories.length;
 
             const total = calculateSimpleTotal(histories, data.type, productHistories);
+            let totalProductSum = productHistories.reduce((sum, ph) => sum + parseFloat(ph.sold), 0);
+            let totalUsersSum = total - productHistories.reduce((sum, ph) => sum + parseFloat(ph.sold), 0);
+
             const priceFields = userCount > 2
                 ? { easy: data.type.price21, hard: data.type.price22 }
                 : { easy: data.type.price11, hard: data.type.price12 };
 
             let paidPrices = [];
+
             const usersHtml = histories.map((h, idx) => {
                 const startTime = new Date(h.started_at);
                 const now = new Date();
@@ -203,6 +207,8 @@
                 const usageType = h.use;
                 const pricePerHour = usageType === "easy" ? priceFields.easy : priceFields.hard;
                 const totalPrice = pricePerHour ? (diffMinutes * (pricePerHour / 60)).toFixed(0) : "-";
+
+
                 if (pricePerHour) paidPrices.push(parseFloat(totalPrice));
 
                 const allowRemove = histories.length > 1;
@@ -221,8 +227,30 @@
             }).join('');
 
             const totalRow = userCount > 0
-                ? `<div style="margin-top:10px; font-weight:bold; text-align:right;">Общая сумма: ${total.toFixed(2)} сум</div>`
+                ? `
+                <div style="margin-top:10px; font-weight:bold; text-align:right;">
+                    Общая сумма пользователей: ${totalUsersSum.toFixed(2)} сум
+                </div>
+
+                <div style="margin-top:10px; font-weight:bold; text-align:right;">
+                    Общая сумма товаров: ${totalProductSum.toFixed(2)} сум
+                </div>
+
+                <div style="margin-top:10px; font-weight:bold; text-align:right;">
+                    Общая сумма: ${total.toFixed(2)} сум
+                </div>
+                <div class="mb-3 row justify-content-end" style="margin-top:10px;">
+                    <label for="paidAmount" class="col-form-label col-auto fw-bold text-end">К оплате:</label>
+                    <div class="col-auto">
+                        <input type="number" class="form-control text-end" id="paidAmount" placeholder="Введите сумму  " style="width: 200px;" />
+                    </div>
+                    <div class="col-auto align-self-center">сум</div>
+                </div>
+                `
                 : '';
+
+
+
 
             const products = productHistories.map(ph => ({
                 product_id: ph.product_id,
@@ -255,10 +283,8 @@
         </div>
     `;
 
-            const combinedData = {
-                paid_prices: paidPrices,
-                products: products
-            };
+
+
 
             Swal.fire({
                 title: "Общий отчет",
@@ -267,8 +293,19 @@
                 showConfirmButton: false,
                 didOpen: () => {
                     const allBtn = document.getElementById('finish-all-btn');
+                    let sold_cost_input = document.getElementById('paidAmount');
+                    let sold_cost = 0;
+
+                    sold_cost_input.addEventListener('input', () => {
+                        sold_cost = Number(sold_cost_input.value)
+                    });
                     if (allBtn) {
                         allBtn.addEventListener('click', function () {
+                            const combinedData = {
+                                prices: paidPrices,
+                                paid_prices: sold_cost,
+                                products: products
+                            };
                             finishAllUsers(data.id, combinedData); // ✅ data obyekt tarzida yuboriladi
                         });
                     }
@@ -435,7 +472,8 @@
                     "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
                 },
                 body: JSON.stringify({
-                    paid_prices: data.paid_prices || [],
+                    prices: data.prices || [],
+                    paid_prices: data.paid_prices,
                     products: data.products || []
                 })
             })
@@ -459,8 +497,35 @@
 
 
     <script>
+        let oldProductHtml = "";
         function sellProduct(data_id) {
             let productList = [];
+
+            console.log(data[0]['devices'][0]['device_product_history_active']);
+            let DDevice = null;
+
+            data.forEach(val => {
+                val['devices'].forEach(k => {
+                    if(k['id'] === data_id){
+                        DDevice = k;
+                    }
+                });
+            });
+
+            if(DDevice) {
+                DDevice['device_product_history_active'].forEach(val => {
+                    let name = `${val['product']['name']}(${parseInt(val['product']['expense']).toLocaleString()} so'm)`
+                    productList.push({
+                        num: productList.length,
+                        product_id: val['product']['id'],
+                        name: name,
+                        count: val['count'],
+                        expense: val['sold'],
+                        product_history_id: val['id'],
+                    });
+                });
+            }
+
 
             function calculateTotalSum() {
                 return productList.reduce((sum, p) => {
@@ -469,14 +534,23 @@
                 }, 0);
             }
 
+
             function renderProductListHTML() {
                 const total = calculateTotalSum();
-                const items = productList.map(p => `<li>${p.name} - ${p.count} dona</li>`).join('');
+                const items = productList.map(p => `
+                    <li>
+                        ${p.name} - ${p.count} dona
+                        <button class="editProductBtn btn btn-warning bx bx-pencil"
+                                type="button"
+                                data-data='${JSON.stringify(p).replace(/'/g, "&apos;")}'>
+                        </button>
+                    </li>
+                `).join('');
                 return `
             ${items}
             <hr>
             <b>Umumiy summa: ${total.toLocaleString()} so'm</b>
-        `;
+                `;
             }
 
             function openMainModal() {
@@ -491,6 +565,13 @@
                     showCancelButton: true,
                     confirmButtonText: 'Отправить',
                     didOpen: () => {
+                        document.querySelectorAll('.editProductBtn').forEach(button => {
+                            button.addEventListener('click', function() {
+                                const dataValue = this.getAttribute('data-data');
+                                const jsonData = JSON.parse(dataValue);
+                                openEditProductModal(jsonData);
+                            });
+                        });
                         document.getElementById('addProductBtn').addEventListener('click', () => {
                             openAddProductModal();
                         });
@@ -547,7 +628,7 @@
                         $('#productSelect').select2({
                             dropdownParent: $('.swal2-container'),
                             placeholder: 'Выберите товар...',
-                            minimumInputLength: 1,
+                            dropdownCssClass: 'select2-scrollable-dropdown',
                             ajax: {
                                 url: '/api/products',
                                 dataType: 'json',
@@ -556,7 +637,7 @@
                                 processResults: data => ({
                                     results: data.map(p => ({
                                         id: p.id,
-                                        text: `${p.name} (${p.count} ta) - ${parseInt(p.expense).toLocaleString()} so'm`,
+                                        text: `${p.name}(${parseInt(p.expense).toLocaleString()} so'm)`,
                                         count: p.count,
                                         expense: p.expense
                                     }))
@@ -590,10 +671,12 @@
                         }
 
                         productList.push({
+                            num: productList.length,
                             product_id: productId,
                             name: productName,
                             count: count,
-                            expense: expense
+                            expense: expense,
+                            product_history_id: 0
                         });
 
                         return true;
@@ -601,6 +684,38 @@
                 }).then(res => {
                     if (res.isConfirmed) {
                         openMainModal();
+                    }
+                });
+            }
+
+            function openEditProductModal(d) {
+                console.log(d);
+                Swal.fire({
+                    title: d.name,
+                    html: `
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="productCount" min="1" value="${d.count}" placeholder="Количество" class="form-control" style="width: 100%">
+                        </div>
+                    `,
+                    confirmButtonText: 'Обновить',
+                    showCancelButton: true,
+                    preConfirm: () => {
+                        const productId = d.num;
+                        const count = parseInt(document.getElementById('productCount').value);
+
+                        productList.forEach(vv => {
+                            if (vv.num === productId) {
+                                vv.count = count;
+                            }
+                        });
+                        console.log(productId + " - " + count);
+                        console.log(productList);
+
+                        return true;
+                    }
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        openMainModal(); // Asosiy modalni ochish
                     }
                 });
             }
