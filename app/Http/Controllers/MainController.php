@@ -112,6 +112,39 @@ class MainController extends Controller
         return redirect()->route('dashboard');
     }
 
+    public function calculate(Request $request)
+    {
+        // Validate input
+        $request->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after_or_equal:startDate',
+        ]);
+
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+
+        // === Kirimlar (Foydalanuvchi va Mahsulot) ===
+        $userProfitTotal = History::whereBetween('created_at', [$startDate, $endDate])->sum('paid_price');
+        $productProfitTotal = DeviceProductHistory::whereBetween('created_at', [$startDate, $endDate])
+            ->sum(DB::raw('sold * count'));
+
+        $totalIncome = $userProfitTotal + $productProfitTotal;
+
+        // === Chiqimlar (Mahsulotlar kirimidan) ===
+        $totalExpense = ProductHistory::whereBetween('created_at', [$startDate, $endDate])
+            ->sum(DB::raw('income * count'));
+
+        // === Foyda (Kirim - Chiqim) ===
+        $totalProfit = $totalIncome - $totalExpense;
+
+        // Return the results as JSON
+        return response()->json([
+            'totalIncome' => $totalIncome,
+            'totalExpense' => $totalExpense,
+            'totalProfit' => $totalProfit,
+        ], 200);
+    }
+
 
 
 

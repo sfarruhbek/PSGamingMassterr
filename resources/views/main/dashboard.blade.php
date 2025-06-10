@@ -113,7 +113,7 @@
                                         </div>
                                     </div>
                                     <span class="d-block mb-1">Общий доход</span>
-                                    <h3 class="card-title text-nowrap mb-2">{{ $todayExpense ?? 0 }} сум</h3>
+                                    <h3 class="card-title text-nowrap mb-2">{{ $totalExpense ?? 0 }} сум</h3>
                                 </div>
                             </div>
                         </div>
@@ -148,8 +148,12 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+        <div class="container-xxl flex-grow-1 container-p-y">
+            <div class="row">
                 <!-- Yillik hisobot -->
-                <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
+                <div class="col-12 col-lg-8 mb-4">
                     <div class="card">
                         <div class="row row-bordered g-0">
                             <div class="col-md-12">
@@ -159,7 +163,51 @@
                         </div>
                     </div>
                 </div>
-                <!--/ Yillik hisobot -->
+                <!-- /Yillik hisobot -->
+
+                <!-- New Date Input Card -->
+                <div class="col-12 col-lg-4 mb-4">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <form id="dateForm" action="{{ route('main.calculate-income-expense') }}" method="POST">
+                                @csrf
+                                <div class="card-title d-flex align-items-start justify-content-between">
+                                    <h5 class="mb-0">Выбор дат</h5>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="startDate" class="form-label">Начальная дата</label>
+                                    <input type="datetime-local" id="startDate" name="startDate" class="form-control" required />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="endDate" class="form-label">Конечная дата</label>
+                                    <input type="datetime-local" id="endDate" name="endDate" class="form-control" required />
+                                </div>
+                                <button type="submit" class="btn btn-primary">OK</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card" id="financialOverview" style="display: none">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-4">Финансовый обзор</h5>
+                            <div class="row text-left">
+                                <div class="col">
+                                    <h3 class="text-success">Доход: <span id="totalIncome">0</span> сум</h3>
+                                </div>
+                            </div>
+                            <div class="row text-left">
+                                <div class="col">
+                                    <h3 class="text-danger">Расходы: <span id="totalExpense">0</span> сум</h3>
+                                </div>
+                            </div>
+                            <div class="row text-left">
+                                <div class="col">
+                                    <h3 class="text-primary">Чистая прибыль: <span id="totalProfit">0</span> сум</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /New Date Input Card -->
             </div>
         </div>
         <!-- / Content -->
@@ -170,6 +218,39 @@
 
     <!-- ApexCharts -->
     <script src="{{asset('assets/vendor/libs/apex-charts/apexcharts.js')}}"></script>
+
+    <script>
+        document.getElementById('dateForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Standart shakl yuborilishini to'xtatadi
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}', // CSRF token ni qo'shadi
+                },
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Javob ma'lumotlarini yangilash
+                    const totalIncome = data.totalIncome;
+                    const totalExpense = data.totalExpense;
+                    const totalProfit = totalIncome - totalExpense; // Sof foyda hisoblash
+
+                    document.getElementById('totalIncome').textContent = totalIncome;
+                    document.getElementById('totalExpense').textContent = totalExpense;
+                    document.getElementById('totalProfit').textContent = totalProfit;
+
+                    // Kartani ko'rsatish
+                    document.getElementById('financialOverview').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Xato:', error);
+                });
+        });
+    </script>
 
     <script>
         'use strict';

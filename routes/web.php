@@ -29,6 +29,7 @@ Route::get('/main/history', [MainController::class, 'history'])->name('main.hist
 Route::get('/main/product-history', [MainController::class, 'product_history'])->name('main.product-history')->middleware(['auth', 'verified']);
 Route::get('/main/dashboard', [MainController::class, 'dashboard'])->name('main.dashboard')->middleware(['auth', 'verified']);
 Route::get('/main/products', [MainController::class, 'products'])->name('main.products')->middleware(['auth', 'verified']);
+Route::post('/main/calculate-income-expense', [MainController::class, 'calculate'])->name('main.calculate-income-expense')->middleware(['auth', 'verified']);
 
 
 Route::resource('/res/type', TypeController::class)->middleware(['auth', 'verified'])->names('res.type');
@@ -40,6 +41,8 @@ Route::post('/res/device/start/{id}', [DeviceController::class, 'start'])->name(
 Route::post('/res/device/finish/{device}/{history}', [DeviceController::class, 'finishSingleUser']);
 Route::post('/res/device/finish-all/{device}', [DeviceController::class, 'finishAllUsers']);
 
+
+Route::post('product/add-product', [ProductController::class,'add_product'])->name('product.add-product');
 Route::post('/res/sell-product', [ProductController::class, 'sell_product'])->name('sell.product');
 
 //API
