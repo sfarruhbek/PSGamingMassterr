@@ -17,11 +17,10 @@ use function Pest\Laravel\get;
 class MainController extends Controller
 {
     public function index() {
+        $data = Type::with('devices')->with('devices.type')->with('devices.deviceProductHistoryActive.product')->with('devices.activeHistories')->get();
         if (Auth::user()->role === 'admin') {
-            $data = Type::with('devices')->with('devices.type')->with('devices.deviceProductHistoryActive.product')->with('devices.activeHistories')->get();
             return view('main.index', compact('data'));
         } elseif (Auth::user()->role === 'cashier') {
-            $data = Type::with('devices')->with('devices.type')->with('devices.activeHistories')->with('devices.deviceProductHistoryActive.product')->get();
             return view('cashier.index', compact('data'));
         }
         return redirect()->route('dashboard');
