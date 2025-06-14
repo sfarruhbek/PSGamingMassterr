@@ -115,6 +115,7 @@
         function showMore(data){
             console.log(data);
 
+            let name = data.device.name;
             let startTime = formatTime(data.started_at);
             let endTime = formatTime(data.finished_at);
             let duration = getDuration(data.started_at, data.finished_at);
@@ -131,7 +132,7 @@
             });
 
             Swal.fire({
-                title: 'Device name',
+                title: name,
                 html: `
                     <div style="text-align: left; font-size: 16px;">
                       <p><strong>Начало:</strong> ${startTime}</p>
