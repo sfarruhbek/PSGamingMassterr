@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use function Pest\Laravel\get;
 
 class MainController extends Controller
 {
@@ -184,8 +185,9 @@ class MainController extends Controller
 
     public function history(Request $request)
     {
-        $query = History::when(true, function ($query) {
-            return $query->where('paid_price', '!=', 0); // 'paid_price' 0 ga teng bo‘lmaganlarni olish
+        $query = History::with(['productHistory.product'])
+        ->when(true, function ($query) {
+            return $query->where('paid_price', '!=', 0);
         });
 
         // Agar qidiruv parametri kiritilgan bo'lsa
@@ -194,11 +196,15 @@ class MainController extends Controller
                 $query->whereHas('device', function ($query) use ($request) {
                     $query->where('name', 'like', '%' . $request->search . '%');
                 })
+                    ->orWhereHas('productHistory', function ($query) use ($request) {
+                        $query->where('name', 'like', '%' . $request->search . '%'); // yoki boshqa ustun nomi
+                    })
                     ->orWhere('started_at', 'like', '%' . $request->search . '%')
                     ->orWhere('paid_price', 'like', '%' . $request->search . '%')
                     ->orWhere('finished_at', 'like', '%' . $request->search . '%');
             });
         }
+        $products = DeviceProductHistory::with('device');
 
         // DESC bo'yicha paid_price bo'yicha saralash
         $data = $query->orderBy('started_at', 'desc')->paginate(100);

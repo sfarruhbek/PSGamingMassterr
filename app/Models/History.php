@@ -12,4 +12,8 @@ class History extends Model
     {
         return $this->belongsTo(Device::class);
     }
+    public function productHistory()
+    {
+        return $this->hasMany(DeviceProductHistory::class, 'history_id', 'id');
+    }
 }

@@ -8,6 +8,7 @@ class DeviceProductHistory extends Model
 {
     protected $fillable = [
         'device_id',
+        'history_id',
         'product_id',
         'count',
         'sold',
@@ -17,7 +18,7 @@ class DeviceProductHistory extends Model
 
     public function device()
     {
-        return $this->belongsTo(Device::class);
+        return $this->belongsTo(History::class);
     }
 
     public function product()

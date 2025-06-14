@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DeviceProductHistory;
+use App\Models\History;
 use App\Models\Product;
 use App\Models\ProductHistory;
 use Illuminate\Http\Request;
@@ -130,6 +131,7 @@ class ProductController extends Controller
 
         $deviceId = $request->device_id;
         $products = $request->products;
+        $history = History::where('finished_at', null)->first();
 
         foreach ($products as $item) {
             $product = Product::find($item['product_id']);
@@ -168,6 +170,7 @@ class ProductController extends Controller
                 } else {
                     DeviceProductHistory::create([
                         'device_id' => $deviceId,
+                        'history_id' => $history->id,
                         'product_id' => $product->id,
                         'count' => $item['count'],
                         'sold' => $product->expense * $item['count'],
