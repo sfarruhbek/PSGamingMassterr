@@ -117,9 +117,10 @@
 
             let startTime = formatTime(data.started_at);
             let endTime = formatTime(data.finished_at);
+            let duration = getDuration(data.started_at, data.finished_at);
             let deviceTotalSold = `${data.paid_price.toLocaleString()} сум`;
 
-            const total = getTotalSum(data).toLocaleString()  + " сум";
+            let total = getTotalSum(data).toLocaleString()  + " сум";
 
             let productsHtml = '';
             data.product_history.forEach(item => {
@@ -135,6 +136,7 @@
                     <div style="text-align: left; font-size: 16px;">
                       <p><strong>Начало:</strong> ${startTime}</p>
                       <p><strong>Окончание:</strong> ${endTime}</p>
+                      <p><strong>Продолжительность:</strong> ${duration}</p>
                       <p><strong>Сумма по устройству:</strong> ${deviceTotalSold}</p>
                       <hr>
                       <h4>Товары</h4>
@@ -146,6 +148,14 @@
                 focusConfirm: false,
                 confirmButtonText: 'OK',
             });
+        }
+        function getDuration(start, end) {
+            const startTime = new Date(start.replace(' ', 'T'));
+            const endTime = new Date(end.replace(' ', 'T'));
+            const diffMs = endTime - startTime;
+            const minutes = Math.floor(diffMs / 60000);
+            const seconds = Math.floor((diffMs % 60000) / 1000);
+            return `${minutes} мин ${seconds} сек`;
         }
         function getTotalSum(data) {
             const totalSold = data.product_history.reduce((sum, item) => sum + item.sold, 0);
