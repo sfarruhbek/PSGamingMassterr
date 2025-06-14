@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('device_product_histories', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('history_id')->nullable();
             $table->foreignId('device_id')->nullable();
             $table->foreignId('product_id')->constrained();
             $table->integer('count');
