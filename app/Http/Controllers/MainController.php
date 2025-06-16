@@ -18,6 +18,7 @@ class MainController extends Controller
 {
     public function index() {
         $data = Type::with('devices')->with('devices.type')->with('devices.deviceProductHistoryActive.product')->with('devices.activeHistories')->get();
+        //dd($data);
         if (Auth::user()->role === 'admin') {
             return view('main.index', compact('data'));
         } elseif (Auth::user()->role === 'cashier') {

@@ -431,6 +431,7 @@
 
 
         function finishSingleUser(deviceId, historyId, btn) {
+            return false;
             btn.disabled = true;
 
             // Find the user's price from the UI or recalculate here
@@ -501,7 +502,6 @@
         function sellProduct(data_id) {
             let productList = [];
 
-            console.log(data[0]['devices'][0]['device_product_history_active']);
             let DDevice = null;
 
             data.forEach(val => {
@@ -511,6 +511,7 @@
                     }
                 });
             });
+            console.log(DDevice);
 
             if(DDevice) {
                 DDevice['device_product_history_active'].forEach(val => {
@@ -520,7 +521,7 @@
                         product_id: val['product']['id'],
                         name: name,
                         count: val['count'],
-                        expense: val['sold'],
+                        expense: val['sold'] / val['count'],
                         product_history_id: val['id'],
                     });
                 });

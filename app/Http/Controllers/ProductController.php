@@ -131,7 +131,7 @@ class ProductController extends Controller
 
         $deviceId = $request->device_id;
         $products = $request->products;
-        $history = History::where('finished_at', null)->first();
+        $history = History::where('finished_at', null)->where('device_id', $deviceId)->first();
 
         foreach ($products as $item) {
             $product = Product::find($item['product_id']);

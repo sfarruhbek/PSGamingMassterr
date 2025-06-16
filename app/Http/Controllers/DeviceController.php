@@ -116,6 +116,7 @@ class DeviceController extends Controller
 
     public function finishSingleUser(Request $request, $deviceId, $historyId)
     {
+        return response()->json("Not Found",404);
         $history = History::where('device_id', $deviceId)
             ->where('id', $historyId)
             ->whereNull('finished_at')
@@ -145,6 +146,8 @@ class DeviceController extends Controller
 
         $paidPrices = $request->input('paid_prices', 0);
         $products = $request->input('products', []);
+
+
 
         // ✅ Mahsulot tarixini yangilash
         $products_cost = DeviceProductHistory::where('device_id', $deviceId)->where('status', false)->sum('sold');
