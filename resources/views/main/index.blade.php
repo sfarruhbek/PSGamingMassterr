@@ -620,7 +620,7 @@
                     <select id="productSelect" style="width: 60%" class="form-control">
                         <option value="">Выберите товар...</option>
                     </select>
-                    <input type="number" id="productCount" min="1" placeholder="Количество" class="form-control" style="width: 30%">
+                    <input type="number" id="productCount" min="0" placeholder="Количество" class="form-control" style="width: 30%">
                 </div>
             `,
                     confirmButtonText: 'Добавить',
