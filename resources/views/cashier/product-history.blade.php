@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.cashier')
 @section('content')
 
     <div class="content-wrapper">
