@@ -120,9 +120,9 @@ class ProductController extends Controller
     public function sell_product(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'products' => 'required|array|min:1',
+            'products' => 'required|array|min:0',
             'products.*.product_id' => 'required|exists:products,id',
-            'products.*.count' => 'required|integer|min:1'
+            'products.*.count' => 'required|integer|min:0'
         ]);
 
         if ($validator->fails()) {
